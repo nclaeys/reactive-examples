@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class PartialResult implements Comparable<PartialResult> {
+public class PartialResult implements Stitchable<PartialResult> {
 
     private int lowerBound;
     private int upperBound;
@@ -43,7 +43,7 @@ public class PartialResult implements Comparable<PartialResult> {
         return partial;
     }
 
-    public static PartialResult stitchPartialResults(PartialResult previous, PartialResult next) {
+    public static PartialResult mergeResult(PartialResult previous, PartialResult next) {
         Range<Integer> range = previous.getRange().span(next.getRange());
         Integer upperValue = range.upperEndpoint();
         Integer lowerValue = range.lowerEndpoint();
@@ -74,6 +74,11 @@ public class PartialResult implements Comparable<PartialResult> {
                 .append("upperBound", upperBound)
                 .append("value", value)
                 .toString();
+    }
+
+    @Override
+    public boolean isSubsequent(PartialResult next) {
+        return upperBound == next.getLowerBound();
     }
 
     public Integer getIntervalSize() {

@@ -52,7 +52,7 @@ public class PartialResultStitcher extends BaseSubscriber<PartialResult> {
             current = it.next();
 
             if (isStitchable(previous, current)) {
-                current = PartialResult.stitchPartialResults(previous, current);
+                current = PartialResult.mergeResult(previous, current);
             } else {
                 // emit previous; continue stitching with new current
                 sink.next(previous);

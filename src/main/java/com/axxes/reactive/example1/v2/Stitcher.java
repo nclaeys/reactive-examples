@@ -24,7 +24,7 @@ public class Stitcher {
                 current = it.next();
 
                 if (previous.getUpperBound() == current.getLowerBound()) {
-                    current = PartialResult.stitchPartialResults(previous, current);
+                    current = PartialResult.mergeResult(previous, current);
                 } else {
                     outputSink.next(previous);
                 }

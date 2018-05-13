@@ -6,6 +6,7 @@ import com.axxes.reactive.example1.v3.CombineTimeSplittedResultsV3;
 import com.axxes.reactive.example1.v2.CombineTimeSplittedResultsV2;
 import com.axxes.reactive.example1.model.PartialResult;
 import com.axxes.reactive.example1.model.Result;
+import com.axxes.reactive.example1.v4.CombineTimeSplittedResultsWithAbstraction;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -35,7 +36,8 @@ public class CombineTimeSplittedResultsV1Test {
                 new Object[]{"original", new CombineTimeSplittedResultsOriginal()},
                 new Object[]{"Impl 1", new CombineTimeSplittedResultsV1()},
                 new Object[]{"Impl 2", new CombineTimeSplittedResultsV2()},
-                new Object[]{"Impl 3", new CombineTimeSplittedResultsV3()}
+                new Object[]{"Impl 3", new CombineTimeSplittedResultsV3()},
+                new Object[]{"4 with Abstraction", new CombineTimeSplittedResultsWithAbstraction()}
         );
     }
 

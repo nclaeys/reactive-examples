@@ -21,7 +21,7 @@ public class CombineTimeSplittedResultsOriginal implements CombineTimeSplittedRe
         CountDownLatch countDownLatch = new CountDownLatch(futureResults.size());
 
         return Flux.<PartialResult>create(sink -> {
-            futureResults.forEach(future -> future.whenComplete(addOrResolveFuture(intermediateResults, sink, countDownLatch)));
+            futureResults.forEach(future -> future.whenComplete(sendCompletedResults(intermediateResults, sink, countDownLatch)));
             CompletableFuture.supplyAsync(() -> waitForResultsAndFinish(countDownLatch, intermediateResults, sink));
         }).map(Result::fromPartialResult);
     }
@@ -42,7 +42,7 @@ public class CombineTimeSplittedResultsOriginal implements CombineTimeSplittedRe
         return null;
     }
 
-    private BiConsumer<List<PartialResult>, Throwable> addOrResolveFuture(List<PartialResult> intermediateResults, FluxSink<PartialResult> sink, CountDownLatch countDownLatch) {
+    private BiConsumer<List<PartialResult>, Throwable> sendCompletedResults(List<PartialResult> intermediateResults, FluxSink<PartialResult> sink, CountDownLatch countDownLatch) {
         return (results, exception) -> {
             if (results != null) {
                 for (PartialResult res : results) {
