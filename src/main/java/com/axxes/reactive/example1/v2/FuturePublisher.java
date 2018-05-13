@@ -24,6 +24,8 @@ public final class FuturePublisher<T> implements Publisher<T> {
     }
 
     private List<Mono<T>> adaptFuturesToReactiveStreams() {
-        return futures.stream().map(Mono::fromFuture).collect(toList());
+        return futures.stream()
+                      .filter(future -> !future.isCompletedExceptionally())
+                      .map(Mono::fromFuture).collect(toList());
     }
 }

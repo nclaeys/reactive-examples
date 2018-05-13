@@ -8,5 +8,5 @@ import java.util.concurrent.CompletableFuture;
 
 public interface CombineResultsByKey {
 
-    Flux<KeyedResult> combine(List<CompletableFuture<List<KeyedResult>>> layerResults, int numberOfLayers);
+    Flux<KeyedResult> combine(List<List<CompletableFuture<KeyedResult>>> runResults, int numberOfRuns);
 }
