@@ -22,7 +22,11 @@ public class CombineResultsByKeyOriginal implements CombineResultsByKey, AutoClo
     private ExecutorService executorService;
 
     public CombineResultsByKeyOriginal() {
-        executorService = Executors.newFixedThreadPool(2);
+        this(2);
+    }
+
+    public CombineResultsByKeyOriginal(int nbOfThreads) {
+        executorService = Executors.newFixedThreadPool(nbOfThreads);
     }
 
     @Override
