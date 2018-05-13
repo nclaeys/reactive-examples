@@ -13,8 +13,8 @@ import java.util.function.Predicate;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class CombineTimeSplittedResults implements com.axxes.reactive.example1.CombineTimeSplittedResults {
-    private static final Logger LOGGER = getLogger(CombineTimeSplittedResults.class);
+public class CombineTimeSplittedResultsV1 implements com.axxes.reactive.example1.CombineTimeSplittedResults {
+    private static final Logger LOGGER = getLogger(CombineTimeSplittedResultsV1.class);
 
     @Override
     public Flux<Result> transform(List<CompletableFuture<List<PartialResult>>> futureResults) {

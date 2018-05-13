@@ -1,5 +1,7 @@
 package com.axxes.reactive.example1;
 
+import com.axxes.reactive.example1.original.CombineTimeSplittedResultsOriginal;
+import com.axxes.reactive.example1.v1.CombineTimeSplittedResultsV1;
 import com.axxes.reactive.example1.v3.CombineTimeSplittedResultsV3;
 import com.axxes.reactive.example1.v2.CombineTimeSplittedResultsV2;
 import com.axxes.reactive.example1.model.PartialResult;
@@ -23,20 +25,21 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 
 @RunWith(Parameterized.class)
-public class CombineTimeSplittedResultsTest {
+public class CombineTimeSplittedResultsV1Test {
 
     private final CombineTimeSplittedResults example;
 
     @Parameters(name = "{0}")
     public static Collection<Object[]> impls() {
         return asList(
-                new Object[]{"Impl 1", new com.axxes.reactive.example1.v1.CombineTimeSplittedResults()},
+                new Object[]{"original", new CombineTimeSplittedResultsOriginal()},
+                new Object[]{"Impl 1", new CombineTimeSplittedResultsV1()},
                 new Object[]{"Impl 2", new CombineTimeSplittedResultsV2()},
                 new Object[]{"Impl 3", new CombineTimeSplittedResultsV3()}
         );
     }
 
-    public CombineTimeSplittedResultsTest(String name, CombineTimeSplittedResults example) {
+    public CombineTimeSplittedResultsV1Test(String name, CombineTimeSplittedResults example) {
         this.example = example;
     }
 

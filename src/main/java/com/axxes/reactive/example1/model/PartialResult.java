@@ -75,4 +75,8 @@ public class PartialResult implements Comparable<PartialResult> {
                 .append("value", value)
                 .toString();
     }
+
+    public Integer getIntervalSize() {
+        return upperBound - lowerBound;
+    }
 }
