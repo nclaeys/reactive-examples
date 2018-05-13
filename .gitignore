@@ -1,0 +1,7 @@
+.idea
+*.iml
+*~
+**/.DS_Store
+target
+.versions
+release.sh
