@@ -4,8 +4,9 @@ import com.axxes.reactive.example2.model.KeyedResult;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface CombineResultsByKey {
 
-    Flux<KeyedResult> combine(List<List<KeyedResult>> layerResults);
+    Flux<KeyedResult> combine(List<CompletableFuture<List<KeyedResult>>> layerResults, int numberOfLayers);
 }

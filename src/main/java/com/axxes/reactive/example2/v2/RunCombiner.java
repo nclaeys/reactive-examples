@@ -7,12 +7,12 @@ import reactor.core.publisher.GroupedFlux;
 
 import java.util.List;
 
-public class LayerCombiner implements Publisher<KeyedResult> {
+public class RunCombiner implements Publisher<KeyedResult> {
 
     private final GroupedFlux<String, Float> allLayersCombined;
     private final int numberOfLayers;
 
-    LayerCombiner(GroupedFlux<String, Float> allLayersCombined, int numberOfLayers) {
+    RunCombiner(GroupedFlux<String, Float> allLayersCombined, int numberOfLayers) {
         this.allLayersCombined = allLayersCombined;
         this.numberOfLayers = numberOfLayers;
     }

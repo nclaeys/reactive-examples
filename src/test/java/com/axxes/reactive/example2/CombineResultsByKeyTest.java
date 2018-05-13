@@ -1,6 +1,7 @@
 package com.axxes.reactive.example2;
 
 import com.axxes.reactive.example2.model.KeyedResult;
+import com.axxes.reactive.example2.v1.CombineResultsByKeyV1;
 import com.axxes.reactive.example2.v2.CombineResultsByKey2;
 import org.hamcrest.core.IsInstanceOf;
 import org.hamcrest.core.IsNot;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
 import static java.lang.String.format;
@@ -28,7 +30,7 @@ public class CombineResultsByKeyTest {
     @Parameters(name = "{0}")
     public static Collection<Object[]> parameters() {
         return asList(
-                new Object[]{"Impl1", new com.axxes.reactive.example2.v1.CombineResultsByKey()},
+                new Object[]{"Impl1", new CombineResultsByKeyV1()},
                 new Object[]{"Impl2", new CombineResultsByKey2()}
         );
     }
@@ -38,12 +40,12 @@ public class CombineResultsByKeyTest {
     }
 
     @Test
-    public void recommendResultsWhenBothFluxesHaveResults_calculateAverages() {
+    public void resultsWhenBothFluxesHaveResults_calculateAverages() {
         Flux<KeyedResult> resultFlux = example
                 .combine(asList(
                         generateList(1, 2),
                         generateList(1, 2)
-                ));
+                ), 2);
 
         StepVerifier.create(resultFlux)
                 .expectNext(new KeyedResult("key1", 1))
@@ -53,12 +55,30 @@ public class CombineResultsByKeyTest {
     }
 
     @Test
-    public void recommendResultsWhenNotAllKeysAreOnBothFluxes_missingResultsAreSendAtTheEnd() {
+    public void resultsWhenOneLayerDoesNotComplete_otherResultsAreReturned() {
+        CompletableFuture<List<KeyedResult>> uncompleted = new CompletableFuture<>();
+        Flux<KeyedResult> resultFlux = example
+                .combine(asList(
+                        uncompleted,
+                        generateList(1, 2),
+                        generateList(1, 1)), 1);
+
+        StepVerifier.create(resultFlux)
+                    .expectNext(new KeyedResult("key1", 1))
+                    .thenCancel()
+                    .verify();
+    }
+
+    @Test
+    public void resultsWhenNotAllKeysAreOnBothFluxes_missingResultsAreSendAtTheEnd() {
         Flux<KeyedResult> resultFlux = example
                 .combine(asList(
                         generateList(1, 3),
                         generateList(2, 3)
-                ));
+                ), asList(
+                                generateList(1, 3),
+                                generateList(2, 3)
+                                 ).size());
 
         List<KeyedResult> expectedResults = asList(
                 new KeyedResult("key2", 2),
@@ -73,12 +93,15 @@ public class CombineResultsByKeyTest {
     }
 
     @Test
-    public void recommendLargeAmountOfResults() {
+    public void returnsLargeAmountOfResults() {
         Flux<KeyedResult> resultFlux = example
                 .combine(asList(
                         generateList(1, 100),
                         generateList(2, 100)
-                ));
+                ), asList(
+                                generateList(1, 100),
+                                generateList(2, 100)
+                                 ).size());
 
         List<KeyedResult> expectedResults = IntStream
                 .range(2, 101)
@@ -94,7 +117,7 @@ public class CombineResultsByKeyTest {
 
     @Test
     public void aLotOfLayersAndALotOfKeysInRandomOrder() {
-        assumeThat(example, new IsNot(new IsInstanceOf(com.axxes.reactive.example2.v1.CombineResultsByKey.class)));
+        assumeThat(example, new IsNot(new IsInstanceOf(CombineResultsByKeyV1.class)));
         int maximumMax = 1001;
         int lowerMax = 1000;
         int minimalStart = 1;
@@ -107,7 +130,15 @@ public class CombineResultsByKeyTest {
                 generateFluxWithKeysInRandomOrderAndRandomDropout(minimalStart, lowerMax),
                 generateFluxWithKeysInRandomOrderAndRandomDropout(otherStart, maximumMax),
                 generateFluxWithKeysInRandomOrderAndRandomDropout(minimalStart, lowerMax)
-                                                         ));
+                                                         ), asList(
+                                                                 generateFluxWithKeysInRandomOrderAndRandomDropout(minimalStart, lowerMax),
+                                                                 generateFluxWithKeysInRandomOrderAndRandomDropout(otherStart, maximumMax),
+                                                                 generateFluxWithKeysInRandomOrderAndRandomDropout(minimalStart, lowerMax),
+                                                                 generateFluxWithKeysInRandomOrderAndRandomDropout(otherStart, maximumMax),
+                                                                 generateFluxWithKeysInRandomOrderAndRandomDropout(minimalStart, lowerMax),
+                                                                 generateFluxWithKeysInRandomOrderAndRandomDropout(otherStart, maximumMax),
+                                                                 generateFluxWithKeysInRandomOrderAndRandomDropout(minimalStart, lowerMax)
+                                                                                                                   ).size());
 
         HashMap<String, Boolean> receivedKeys = new HashMap<>();
         for (int i = minimalStart; i <= maximumMax; i++) {
@@ -128,13 +159,13 @@ public class CombineResultsByKeyTest {
         assertThat(receivedKeys.values().stream().allMatch(b -> b)).isTrue();
     }
 
-    private List<KeyedResult> generateList(Integer seed, Integer max) {
-        return IntStream.range(seed, max + 1)
-                .mapToObj(state -> new KeyedResult("key" + state, state))
-                .collect(toList());
+    private CompletableFuture<List<KeyedResult>> generateList(Integer seed, Integer max) {
+        return CompletableFuture.completedFuture(IntStream.range(seed, max + 1)
+                                                          .mapToObj(state -> new KeyedResult("key" + state, state))
+                                                          .collect(toList()));
     }
 
-    private List<KeyedResult> generateFluxWithKeysInRandomOrderAndRandomDropout(int start, int max) {
+    private CompletableFuture<List<KeyedResult>> generateFluxWithKeysInRandomOrderAndRandomDropout(int start, int max) {
         List<Integer> keys = IntStream.range(start, max + 1).boxed().collect(toList());
         Collections.shuffle(keys);
         Random r = new Random();
@@ -145,8 +176,8 @@ public class CombineResultsByKeyTest {
             toRemove--;
         }
 
-        return keys.stream()
-                .map(key -> new KeyedResult("key" + key, key))
-                .collect(toList());
+        return CompletableFuture.completedFuture(keys.stream()
+                                                     .map(key -> new KeyedResult("key" + key, key))
+                                                     .collect(toList()));
     }
 }

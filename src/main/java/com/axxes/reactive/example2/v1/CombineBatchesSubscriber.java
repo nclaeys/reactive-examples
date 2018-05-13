@@ -9,15 +9,15 @@ import reactor.core.publisher.FluxSink;
 import java.util.Collection;
 import java.util.Map;
 
-public class CombineLayersSubscriber extends BaseSubscriber<KeyedResult> {
+public class CombineBatchesSubscriber extends BaseSubscriber<KeyedResult> {
     //interact with the downstream subscriber through the sink
     private final FluxSink<KeyedResult> sink;
-    private final int layers;
+    private final int runs;
     private Multimap<String, KeyedResult> keyToResults = ArrayListMultimap.create();
 
-    public CombineLayersSubscriber(FluxSink<KeyedResult> sink, int layers) {
+    public CombineBatchesSubscriber(FluxSink<KeyedResult> sink, int runs) {
         this.sink = sink;
-        this.layers = layers;
+        this.runs = runs;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CombineLayersSubscriber extends BaseSubscriber<KeyedResult> {
 
     @Override
     protected void hookOnComplete() {
-        sendRemainingResults(layers);
+        sendRemainingResults(runs);
     }
 
     private void sendRemainingResults(int layers) {
@@ -44,8 +44,8 @@ public class CombineLayersSubscriber extends BaseSubscriber<KeyedResult> {
         String currentKey = keyedResult.getKey();
         keyToResults.put(currentKey, keyedResult);
         Collection<KeyedResult> keyedResultsForKey = keyToResults.get(currentKey);
-        if (keyedResultsForKey.size() == layers) {
-            float averageSignificance = calculateAverageValue(keyedResultsForKey, layers);
+        if (keyedResultsForKey.size() == runs) {
+            float averageSignificance = calculateAverageValue(keyedResultsForKey, runs);
             sink.next(new KeyedResult(currentKey, averageSignificance));
             keyToResults.removeAll(currentKey);
         }
