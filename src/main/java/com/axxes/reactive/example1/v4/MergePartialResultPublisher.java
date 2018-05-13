@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
-public class MergePartialResultPublisher<T extends Stitchable> implements Publisher<T>{
+public final class MergePartialResultPublisher<T extends Stitchable> implements Publisher<T>{
     private final Flux<T> partialResultFlux;
-    private PartialResultMerger<T> merger;
+    private final PartialResultMerger<T> merger;
 
     public MergePartialResultPublisher(Flux<T> partialResultFlux, PartialResultMerger<T> merger) {
         this.partialResultFlux = partialResultFlux;

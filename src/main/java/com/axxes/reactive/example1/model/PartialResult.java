@@ -39,6 +39,7 @@ public class PartialResult implements Stitchable<PartialResult> {
         return Range.closed(lowerBound, upperBound);
     }
 
+    @Override
     public boolean isPartial() {
         return partial;
     }
