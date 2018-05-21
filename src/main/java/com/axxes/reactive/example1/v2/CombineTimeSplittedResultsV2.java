@@ -47,11 +47,11 @@ public class CombineTimeSplittedResultsV2 implements CombineTimeSplittedResults 
         );
     }
 
-    private Consumer<PartialResult> routeToStitchableOrOutput(FluxSink<PartialResult> stitchable,
+    private Consumer<PartialResult> routeToStitchableOrOutput(FluxSink<PartialResult> partialResults,
                                                               FluxSink<PartialResult> output) {
         return p -> {
             if (p.isPartial()) {
-                stitchable.next(p);
+                partialResults.next(p);
             } else {
                 output.next(p);
             }

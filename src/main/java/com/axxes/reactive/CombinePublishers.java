@@ -1,4 +1,4 @@
-package com.axxes.reactive.example4;
+package com.axxes.reactive;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

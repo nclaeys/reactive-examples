@@ -1,6 +1,6 @@
 package com.axxes.reactive.example1.v4;
 
-import com.axxes.reactive.example1.model.Stitchable;
+import com.axxes.reactive.example1.model.Mergeable;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import reactor.core.publisher.Flux;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
-public final class MergePartialResultPublisher<T extends Stitchable> implements Publisher<T>{
+public final class MergePartialResultPublisher<T extends Mergeable> implements Publisher<T>{
     private final Flux<T> partialResultFlux;
     private final PartialResultMerger<T> merger;
 

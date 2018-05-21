@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class PartialResult implements Stitchable<PartialResult> {
+public class PartialResult implements Mergeable<PartialResult> {
 
     private int lowerBound;
     private int upperBound;

@@ -21,7 +21,7 @@ public class CombineTimeSplittedResultsV3 implements CombineTimeSplittedResults 
                 .groupBy(PartialResult::isPartial)
                 .flatMap(groupedFlux -> {
                     if (groupedFlux.key()) {
-                        return new StitchingPublisher(groupedFlux);
+                        return new MergeableFlux(groupedFlux);
                     }
                     return groupedFlux;
                 })
@@ -29,10 +29,10 @@ public class CombineTimeSplittedResultsV3 implements CombineTimeSplittedResults 
                 .filter(r -> r.getIntervalSize() > 2);
     }
 
-    private static final class StitchingPublisher implements Publisher<PartialResult> {
+    private static final class MergeableFlux implements Publisher<PartialResult> {
         private final GroupedFlux<Boolean, PartialResult> partialsFlow;
 
-        StitchingPublisher(GroupedFlux<Boolean, PartialResult> partialsFlow) {
+        MergeableFlux(GroupedFlux<Boolean, PartialResult> partialsFlow) {
             this.partialsFlow = partialsFlow;
         }
 
@@ -40,7 +40,7 @@ public class CombineTimeSplittedResultsV3 implements CombineTimeSplittedResults 
         public void subscribe(Subscriber<? super PartialResult> subscriber) {
             Flux.<PartialResult>create(outputSink ->
                     partialsFlow.buffer().subscribe(
-                            Stitcher.stitcher(outputSink),
+                            Merger.merge(outputSink),
                             outputSink::error,
                             outputSink::complete)
             ).subscribe(subscriber);

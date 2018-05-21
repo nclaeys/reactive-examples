@@ -8,9 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class Stitcher {
+public class Merger {
 
-    static Consumer<List<PartialResult>> stitcher(FluxSink<PartialResult> outputSink) {
+    static Consumer<List<PartialResult>> merge(FluxSink<PartialResult> outputSink) {
         return prs -> {
             if (prs.isEmpty()) {
                 return;
